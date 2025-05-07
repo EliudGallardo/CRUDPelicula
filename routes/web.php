@@ -26,3 +26,4 @@ Route::delete('/catalogo/{id}', [CatalogoController::class, 'destroy']);
 */
 
 Route::get('/', [CatalogoController::class, 'index']);
+

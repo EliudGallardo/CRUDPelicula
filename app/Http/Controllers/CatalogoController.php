@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Catalogo;
 use Illuminate\Http\Request;
 use App\Models\Pelicula;
 
@@ -9,6 +9,7 @@ class CatalogoController extends Controller
 {
     public function index(Request $request)
     {
+        $consulta = Catalogo::all();
         $query = Pelicula::query();
 
         // Filtrar por título
