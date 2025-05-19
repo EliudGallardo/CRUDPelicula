@@ -7,7 +7,6 @@ use App\Http\Controllers\AuthController;
 
 // Rutas protegidas (solo accesibles si el usuario ha iniciado sesión)
 Route::middleware(['auth', 'no_cache'])->group(function () {
-
     Route::get('/', [CatalogoController::class, 'inicio'])->name('inicio');
     Route::get('/inicio', [CatalogoController::class, 'inicio'])->name('inicio');
     Route::get('/lista', [CatalogoController::class, 'listado_peliculas'])->name('listado_peliculas');
@@ -21,14 +20,11 @@ Route::middleware(['auth', 'no_cache'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-// Ruta de registro (formulario y acción)
-Route::get('/registro', function () {
-    return view('pages.registro', ['titulo' => 'Registro']);
-})->name('registro');
-Route::post('/registro', [RegistroController::class, 'store'])->name('registrar_usuario');
+// Rutas de login y registro solo accesibles si NO ha iniciado sesión
+Route::middleware('guest')->group(function () {
+    Route::get('/registro', [RegistroController::class, 'create'])->name('registro');
+    Route::post('/registro', [RegistroController::class, 'store'])->name('registrar_usuario');
 
-// Ruta de login (formulario y acción)
-Route::get('/login', function () {
-    return view('pages.login');
-})->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('login_usuario');
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login_usuario');
+});

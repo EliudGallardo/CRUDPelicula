@@ -8,7 +8,7 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <form action="{{ route('registrar_usuario') }}" method="POST">
+    <form action="{{ route('registro') }}" method="POST">
         @csrf
 
         <!-- Campo Nombre -->
@@ -45,6 +45,12 @@
             @error('password') 
                 <div class="text-danger">{{ $message }}</div> 
             @enderror
+        </div>
+
+        <!-- Confirmar Contraseña -->
+        <div class="mb-3">
+            <label for="password_confirmation" class="form-label">Confirmar Contraseña:</label>
+            <input type="password" name="password_confirmation" id="password_confirmation" class="form-control">
         </div>
 
         <!-- Botón de Registro -->

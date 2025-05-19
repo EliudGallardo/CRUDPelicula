@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+    public function showLoginForm()
+    {
+        return view('pages.login'); // Esta vista debe existir
+    }
+
     public function login(Request $request)
     {
         $credentials = $request->only('usuario', 'password');
@@ -16,9 +21,7 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        // Intentar autenticarse con las credenciales
         if (Auth::attempt($credentials)) {
-            // Regenerar la sesión para evitar vulnerabilidades
             $request->session()->regenerate();
             return redirect()->intended(route('inicio'))->with('success', 'Inicio de sesión exitoso.');
         }
@@ -30,10 +33,9 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        // Cerrar sesión y redirigir a la página de login
         Auth::logout();
-        $request->session()->invalidate();       // Invalida sesión actual
-        $request->session()->regenerateToken();  // Regenera el token CSRF
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return redirect()->route('login')->with('success', 'Sesión cerrada correctamente.');
     }
