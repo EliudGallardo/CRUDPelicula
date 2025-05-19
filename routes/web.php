@@ -2,28 +2,33 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CatalogoController;
+use App\Http\Controllers\RegistroController;
+use App\Http\Controllers\AuthController;
 
+// Rutas protegidas (solo accesibles si el usuario ha iniciado sesión)
+Route::middleware(['auth', 'no_cache'])->group(function () {
 
-Route::get('/', [CatalogoController::class, 'index']);
-Route::get('/catalogo/crear', [CatalogoController::class, 'create']);
-Route::post('/catalogo', [CatalogoController::class, 'store']);
+    Route::get('/', [CatalogoController::class, 'inicio'])->name('inicio');
+    Route::get('/inicio', [CatalogoController::class, 'inicio'])->name('inicio');
+    Route::get('/lista', [CatalogoController::class, 'listado_peliculas'])->name('listado_peliculas');
+    Route::get('/agregar', [CatalogoController::class, 'agregar'])->name('agregar');
+    Route::get('/editar/{id}', [CatalogoController::class, 'editar'])->name('catalogo.edit');
+    Route::put('/edicion/{pelicula}', [CatalogoController::class, 'actualizar'])->name('actualizar');
+    Route::post('/insertar', [CatalogoController::class, 'insertar_pelicula'])->name('insertar');
+    Route::delete('/eliminar/{id}', [CatalogoController::class, 'eliminar_pelicula'])->name('catalogo.destroy');
 
-Route::get('/catalogo/{id}/editar', [CatalogoController::class, 'edit']);
-Route::put('/catalogo/{id}', [CatalogoController::class, 'update']);
-Route::delete('/catalogo/{id}', [CatalogoController::class, 'destroy']);
+    // Cerrar sesión
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});
 
+// Ruta de registro (formulario y acción)
+Route::get('/registro', function () {
+    return view('pages.registro', ['titulo' => 'Registro']);
+})->name('registro');
+Route::post('/registro', [RegistroController::class, 'store'])->name('registrar_usuario');
 
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
-Route::get('/', [CatalogoController::class, 'index']);
-
+// Ruta de login (formulario y acción)
+Route::get('/login', function () {
+    return view('pages.login');
+})->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login_usuario');

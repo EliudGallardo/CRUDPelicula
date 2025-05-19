@@ -2,79 +2,62 @@
 
 namespace App\Http\Controllers;
 use App\Models\Catalogo;
+
 use Illuminate\Http\Request;
-use App\Models\Pelicula;
 
-class CatalogoController extends Controller
-{
-    public function index(Request $request)
+class CatalogoController extends Controller{
+    public function inicio(){
+        return view("pages.inicio",["titulo"=>"Inicio"]);
+    }
+    public function login(){
+        return view("pages.login",["titulo"=>"Login"]);
+    }
+    public function registro(){
+        return view("pages.registro",["titulo"=>"Registro"]);
+    }
+    public function listado_peliculas(){
+        $consulta = Catalogo::get();
+        /* $consulta = Catalogo::all();
+        $consulta = Catalogo::get(); */
+        /* $consulta2 = new Catalogo();
+        $datos = $consulta2->all(); */
+        $peliculas = $consulta;
+        return view("pages.listado_peliculas",["titulo"=>"Lista Peliculas","peliculas"=>$peliculas]);
+    }
+    public function agregar(){
+        return view("pages.agregar",["titulo"=>"Agregar"]);
+    }
+    public function editar(Request $request){
+        $consulta = Catalogo::where("id",$request->id)->first();
+        return view("pages.editar",["titulo"=>"Editar Pelicula","pelicula"=>$consulta]);
+    }
+    public function actualizar(Request $request, Catalogo $pelicula){
+        $pelicula->titulo = $request->titulo;
+        $pelicula->descripcion = $request->descripcion;
+        $pelicula->genero = $request->genero;
+        $pelicula->director = $request->director;
+        $pelicula->fecha_estreno = $request->fecha_estreno;
+        $pelicula->save();
+        return redirect()->route("listado_peliculas");
+    }
+    public function insertar_pelicula(Request $request, Catalogo $pelicula){
+        $pelicula->titulo = $request->titulo;
+        $pelicula->descripcion = $request->descripcion;
+        $pelicula->genero = $request->genero;
+        $pelicula->director = $request->director;
+        $pelicula->fecha_estreno = $request->fecha_estreno;
+        $pelicula->save();
+        return redirect()->route("listado_peliculas");
+    }
+    public function eliminar_pelicula($id)
     {
-        $consulta = Catalogo::all();
-        $query = Pelicula::query();
+    $pelicula = Catalogo::find($id); // Usamos find() para buscar por el ID
 
-        // Filtrar por título
-        if ($request->filled('titulo')) {
-            $query->where('titulo', 'like', '%' . $request->titulo . '%');
-        }
-
-        // Filtrar por género
-        if ($request->filled('genero')) {
-            $query->where('genero', 'like', '%' . $request->genero . '%');
-        }
-
-        $peliculas = $query->get();
-
-        return view('catalogo.index', compact('peliculas'));
+    if ($pelicula) {
+        $pelicula->delete(); // Si se encuentra, eliminamos la película
+        return redirect()->route('listado_peliculas')->with('mensaje', 'Película eliminada correctamente.');
     }
 
-
-    public function create()
-    {
-        return view('catalogo.create');
+    return redirect()->route('listado_peliculas')->with('mensaje', 'No se pudo encontrar la película.');
     }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'titulo' => 'required',
-            'descripcion' => 'required',
-            'genero' => 'required',
-            'director' => 'required',
-            'fecha_estreno' => 'required|date',
-        ]);
-
-        Pelicula::create($request->all());
-
-        return redirect('/')->with('success', 'Película registrada exitosamente.');
-    }
-    public function edit($id)
-    {
-        $pelicula = Pelicula::findOrFail($id);
-        return view('catalogo.edit', compact('pelicula'));
-    }
-
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'titulo' => 'required',
-            'descripcion' => 'required',
-            'genero' => 'required',
-            'director' => 'required',
-            'fecha_estreno' => 'required|date',
-        ]);
-
-        $pelicula = Pelicula::findOrFail($id);
-        $pelicula->update($request->all());
-
-        return redirect('/')->with('success', 'Película actualizada correctamente.');
-    }
-
-    public function destroy($id)
-    {
-        $pelicula = Pelicula::findOrFail($id);
-        $pelicula->delete();
-
-        return redirect('/')->with('success', 'Película eliminada correctamente.');
-    }
-
 }

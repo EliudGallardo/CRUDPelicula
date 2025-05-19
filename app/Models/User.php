@@ -18,8 +18,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'email',
+        'usuario',  // Cambiado de 'name' a 'usuario'
         'password',
     ];
 
@@ -32,6 +31,16 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    /**
+     * El atributo que se usa para la autenticación.
+     *
+     * @return string
+     */
+    public function getAuthIdentifierName()
+    {
+        return 'usuario'; // Se especifica que se usa 'usuario' en vez de 'email'
+    }
 
     /**
      * The attributes that should be cast.
